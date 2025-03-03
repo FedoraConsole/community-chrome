@@ -51,23 +51,9 @@ const Tools = () => {
   const aboutMenuDropdownItems = [
     {
       title: intl.formatMessage(messages.apiDocumentation),
-      onClick: () => window.open('https://developers.redhat.com/api-catalog/', '_blank'),
+      // TODO: Update the url of API Documentation
+      onClick: () => window.open('', '_blank'),
       isHidden: isITLessEnv,
-    },
-    {
-      title: intl.formatMessage(messages.openSupportCase),
-      onClick: () => createSupportCase(user.identity, token, isPreview, { supportCaseData }),
-      isDisabled: window.location.href.includes('/application-services') && !isRhosakEntitled,
-      isHidden: isITLessEnv,
-    },
-    {
-      title: intl.formatMessage(messages.statusPage),
-      onClick: () => window.open('https://status.redhat.com/', '_blank'),
-      isHidden: isITLessEnv,
-    },
-    {
-      title: intl.formatMessage(messages.supportOptions),
-      onClick: () => (window.location.href = supportOptionsUrl()),
     },
   ];
 
