@@ -9,6 +9,7 @@ import { useFlagsStatus } from '@unleash/proxy-client-react';
 import { BundleNavigation, NavItem, Navigation } from '../@types/types';
 import { clearGatewayErrorAtom } from '../state/atoms/gatewayErrorAtom';
 import { navigationAtom, setNavigationSegmentAtom } from '../state/atoms/navigationAtom';
+import insightsNavigation from '../chrome/insights-navigation.json';
 
 function cleanNavItemsHref(navItem: NavItem) {
   const result = { ...navItem };
@@ -105,6 +106,25 @@ const useNavigation = () => {
     // reset no nav flag
     setNoNav(false);
     if (currentNamespace && (flagsReady || flagsError)) {
+      if (process.env.LOCAL) {
+        if (observer && typeof observer.disconnect === 'function') {
+          observer.disconnect();
+        }
+
+        const navItems: NavItem[] = insightsNavigation.navItems.map((item) => cleanNavItemsHref(item as NavItem));
+        const schema: Navigation = {
+          ...insightsNavigation,
+          navItems,
+          sortedLinks: [],
+        };
+        observer = registerLocationObserver(pathname, schema);
+        observer.observe(document.querySelector('body')!, {
+          childList: true,
+          subtree: true,
+        });
+        return;
+      }
+
       axios
         .get(`${getChromeStaticPathname('navigation')}/${currentNamespace}-navigation.json`)
         // fallback static CSC for EE env
@@ -118,7 +138,7 @@ const useNavigation = () => {
 
           const data = response.data;
           try {
-            const navItems = await Promise.all(data.navItems.map(cleanNavItemsHref).map(evaluateVisibility));
+            const navItems = await Promise.all(data.navItems.map(cleanNavItemsHref));
             const schema = {
               ...data,
               navItems,
