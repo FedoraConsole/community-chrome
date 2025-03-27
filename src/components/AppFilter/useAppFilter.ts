@@ -6,6 +6,7 @@ import { evaluateVisibility } from '../../utils/isNavItemVisible';
 import { useAtomValue } from 'jotai';
 import { chromeModulesAtom } from '../../state/atoms/chromeModuleAtom';
 import { navigationAtom } from '../../state/atoms/navigationAtom';
+import imagesNavigation from '../../chrome/insights-navigation.json';
 
 export type AppFilterBucket = {
   id: string;
@@ -13,11 +14,15 @@ export type AppFilterBucket = {
   links: NavItem[];
 };
 
-export const requiredBundles = ['application-services', 'openshift', 'insights', 'edge', 'ansible', 'settings', 'iam', 'quay', 'subscriptions'];
+export const requiredBundles = ['insights'];
 
-export const itLessBundles = ['openshift', 'insights', 'settings', 'iam'];
+export const itLessBundles = ['insights'];
 
-const bundlesOrder = ['application-services', 'openshift', 'rhel', 'edge', 'ansible', 'settings', 'cost-management', 'subscriptions', 'iam', 'quay'];
+const bundlesOrder = ['rhel'];
+
+export const bundleMapper = {
+  insights: imagesNavigation,
+};
 
 function findModuleByLink(href: string, { modules }: Pick<ChromeModule, 'modules'> = { modules: [] }) {
   const routes = (modules || [])
@@ -174,19 +179,29 @@ const useAppFilter = () => {
         isLoading: true,
       }));
       const bundles = requiredBundles.filter((app) => !Object.keys(existingSchemas).includes(app));
-      bundles.map((fragment) =>
-        axios
-          .get<BundleNavigation>(`${getChromeStaticPathname('navigation')}/${fragment}-navigation.json?ts=${Date.now()}`)
-          // fallback static CSC for EE env
-          .catch(() => {
-            return axios.get<BundleNavigation>(`$/config/chrome/${fragment}-navigation.json?ts=${Date.now()}`);
-          })
-          .then(handleBundleData)
-          .then(() => Object.values(existingSchemas).map((data) => handleBundleData({ data } as { data: BundleNavigation })))
-          .catch((err) => {
-            console.error('Unable to load appfilter bundle', err, fragment);
-          })
-      );
+      if (process.env.LOCAL) {
+        bundles.map((fragment) => {
+          if (fragment in bundleMapper) {
+            handleBundleData({ data: bundleMapper[fragment as keyof typeof bundleMapper] } as { data: BundleNavigation }).then(() =>
+              Object.values(existingSchemas).map((data) => handleBundleData({ data } as { data: BundleNavigation }))
+            );
+          }
+        });
+      } else {
+        bundles.map((fragment) =>
+          axios
+            .get<BundleNavigation>(`${getChromeStaticPathname('navigation')}/${fragment}-navigation.json?ts=${Date.now()}`)
+            // fallback static CSC for EE env
+            .catch(() => {
+              return axios.get<BundleNavigation>(`$/config/chrome/${fragment}-navigation.json?ts=${Date.now()}`);
+            })
+            .then(handleBundleData)
+            .then(() => Object.values(existingSchemas).map((data) => handleBundleData({ data } as { data: BundleNavigation })))
+            .catch((err) => {
+              console.error('Unable to load appfilter bundle', err, fragment);
+            })
+        );
+      }
     }
   }, [state.isOpen]);
 

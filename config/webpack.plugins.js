@@ -27,6 +27,9 @@ const plugins = (dev = false, beta = false, restricted = false) => {
           }),
         ]
       : []),
+      new webpack.DefinePlugin({
+        'process.env.LOCAL': process.env.LOCAL || false,
+      }),
     new MiniCssExtractPlugin({
       filename: dev ? '[name].css' : '[name].[contenthash].css',
       ignoreOrder: true,

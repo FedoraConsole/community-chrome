@@ -45,7 +45,7 @@ const useGlobalFilter = (callback: (selectedTags?: FlagTagsFilter) => any) => {
 const ScalprumRoot = memo(
   () => {
     return (
-      <ChromeProvider>
+      <>
         <BetaSwitcher />
         <Routes>
           <Route index path="/" element={<DefaultLayout />} />
@@ -69,7 +69,7 @@ const ScalprumRoot = memo(
           )}
           <Route path="*" element={<DefaultLayout Sidebar={Navigation} />} />
         </Routes>
-      </ChromeProvider>
+      </>
     );
     // no props, no need to ever render based on parent changes
   },
@@ -238,7 +238,13 @@ const ChromeApiRoot = ({ config, helpTopicsAPI, quickstartsAPI }: ChromeApiRootP
         api={scalprumProviderProps.api}
         pluginSDKOptions={scalprumProviderProps.pluginSDKOptions}
       >
-        <ScalprumRoot />
+        {process.env.LOCAL ? (
+          <ScalprumRoot />
+        ) : (
+          <ChromeProvider>
+            <ScalprumRoot />
+          </ChromeProvider>
+        )}
       </ScalprumProvider>
     </InternalChromeContext.Provider>
   );

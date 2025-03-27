@@ -6,6 +6,7 @@ import platformUrl from '../platformUrl';
 import { OIDCSecured } from './OIDCSecured';
 import AppPlaceholder from '../../components/AppPlaceholder';
 import { postbackUrlSetup } from '../offline';
+import data from '../../chrome/fed-modules.json';
 
 const OIDCProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [state, setState] = useState<
@@ -16,19 +17,23 @@ const OIDCProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     | undefined
   >(undefined);
   async function setupSSO() {
-    const {
-      // ignore $schema from the data as it is an spec ref
-      data: { $schema: ignore, ...data },
-    } = await loadFedModules();
-    try {
-      const {
-        chrome: {
-          config: { ssoUrl },
-        },
-      } = data;
-      setState({ ssoUrl: platformUrl(DEFAULT_SSO_ROUTES, ssoUrl), microFrontendConfig: data });
-    } catch (error) {
+    if (process.env.LOCAL) {
       setState({ ssoUrl: platformUrl(DEFAULT_SSO_ROUTES), microFrontendConfig: data });
+    } else {
+      const {
+        // ignore $schema from the data as it is an spec ref
+        data: { $schema: ignore, ...data },
+      } = await loadFedModules();
+      try {
+        const {
+          chrome: {
+            config: { ssoUrl },
+          },
+        } = data;
+        setState({ ssoUrl: platformUrl(DEFAULT_SSO_ROUTES, ssoUrl), microFrontendConfig: data });
+      } catch (error) {
+        setState({ ssoUrl: platformUrl(DEFAULT_SSO_ROUTES), microFrontendConfig: data });
+      }
     }
   }
   useEffect(() => {
@@ -41,6 +46,7 @@ const OIDCProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
     () => ({
       client_id: SSO_CLIENT_ID,
       loadUserInfo: true,
+      silent_redirect_uri: `https://${window.location.host}/apps/chrome/silent-check-sso.html`,
       automaticSilentRenew: true,
       redirect_uri: `${window.location.origin}`,
       authority: state?.ssoUrl,

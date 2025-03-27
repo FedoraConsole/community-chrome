@@ -1,8 +1,6 @@
 # Open Services Platform
 
-**Status:** In Progress
-
-This repository contains a **forked** version of the Red Hat Hybrid Console Chroming app, adapted for use in a community Fedora Services Platform. The primary goal of this fork is to maintain compatibility with the Chrome API while enabling additional integrations for creating a new community environment. 
+This repository contains a **forked** version of the Red Hat Hybrid Console Chroming app, adapted for use in a community Fedora Services Platform using Fedora SSO. The primary goal of this fork is to maintain compatibility with the Chrome API while enabling additional integrations for creating a new community environment. 
 
 
 ---
@@ -13,14 +11,13 @@ This repository contains a **forked** version of the Red Hat Hybrid Console Chro
 2. [Directory Structure](#directory-structure)  
 3. [Prerequisites](#prerequisites)  
 4. [Setup Guide](#setup-guide)  
-   - [Step 1: Clone Repositories](#step-1-clone-repositories)  
-   - [Step 2: Start Supporting Services](#step-2-start-supporting-services)  
-   - [Step 3: Start Chrome Service Backend](#step-3-start-chrome-service-backend)  
-   - [Step 4: Start Image Builder Frontend](#step-4-start-image-builder-frontend)  
-   - [Step 5: Start Chrome UI](#step-6-start-chrome-ui)  
-5. [Accessing the Application](#accessing-the-application)  
-6. [Credentials](#credentials)  
-7. [Notes](#notes)
+   - [Step 1: Clone Repositories](#step-1-clone-repositories)    
+   - [Step 2: Start Image Builder Frontend](#step-2-start-image-builder-frontend)  
+   - [Step 3: Start Chrome UI](#step-3-start-chrome-ui)
+6. [Accessing the Application](#accessing-the-application)  
+7. [Credentials](#credentials)  
+8. [Chrome Backend - Optional](#chrome-backend-optional)  
+9. [Notes](#notes)
 
 ---
 
@@ -36,20 +33,11 @@ Below is the expected directory structure for local development under a folder n
 
     open-services/
     ├── community-chrome          # Frontend service from Chrome
-    ├── chrome-service-backend    # Backend service for Chrome
-    ├── image-builder             # Backend service for Image Builder
     └── image-builder-frontend    # Frontend service for Image Builder
 
 ---
 
 ## Prerequisites
-
-Ensure you have the following installed:
-
-- **Docker** or **Podman**  
-- **Node.js** (and **npm**)
-- **Go**
-- **Make**  
 
 In order to access the https://console.stg.foo.fedorainfracloud.org/ in your browser, you have to add entries to your `/etc/hosts` file. This is a one-time setup that has to be done only once (unless you modify hosts) on each machine.
 
@@ -73,7 +61,64 @@ Clone the required repositories into a parent directory:
 
 ---
 
-### Step 2: Start Supporting Services
+### Step 2: Start Image Builder Frontend
+
+1. Navigate to the `image-builder-frontend` folder:
+
+       cd ../image-builder-frontend
+
+2. Start the frontend as a static federated module:
+
+       npm run start:federated
+
+The frontend service should now be running on **port 8003**.
+
+---
+
+### Step 3: Start Chrome UI
+
+1. Navigate back to the `community-chrome` directory:
+
+       cd ../community-chrome
+
+2. Run the development command with environment variables pointing to the ports of the backend services:
+
+       IB_FRONTEND=8003 npm run dev:standalone
+
+This command:
+- Sets the **Image Builder** frontend to port 8003 (`IB_FRONTEND=8003`)
+- *Optional*: Sets the **Image Builder** backend to port 8086 (`IB_SERVICE=8086`), if not set, requests proxied to stage. 
+
+The development environment should now be active.
+
+---
+
+## Accessing the Application
+
+After all services are running, open your browser and navigate to:
+
+    https://console.stg.foo.fedorainfracloud.org:1337
+
+---
+
+## Credentials
+
+Create an account in fedora staging https://accounts.stg.fedoraproject.org
+Log in with your credentials
+
+---
+
+## Chrome Backend (Optional)
+The chrome-backend service scales the platform to support onboarding of microfrontends applications. It adds these features:
+- **Last visited:** last visited frontend applications.
+- **Favorites:** The favorites applications.
+- **Dashboard:** Dashboard management for the landing page including a widgets layout/
+- **Static data:** For navigation, search and fed-modules registration for apps.
+
+This service is not needed when serving just a few services, but can be used in the future for a better scale.
+To simplified the deployment, all the static data is serving within the frontend under `Chrome` [folder](./src/chrome/).
+
+### Running supporting Services
 
 1. Navigate to the `standalone` folder inside `community-chrome`:
    
@@ -98,7 +143,7 @@ This will launch:
 
 ---
 
-### Step 3: Start Chrome Service Backend
+### Start Chrome Service Backend
 
 1. Navigate to the `chrome-service-backend` folder:
 
@@ -116,21 +161,7 @@ The backend service should now be running on **port 8000**.
 
 ---
 
-### Step 4: Start Image Builder Frontend
-
-1. Navigate to the `image-builder-frontend` folder:
-
-       cd ../image-builder-frontend
-
-2. Start the frontend as a static federated module:
-
-       npm run start:federated
-
-The frontend service should now be running on **port 8003**.
-
----
-
-### Step 5: Start Chrome UI
+### Step 3: Start Chrome UI
 
 1. Navigate back to the `community-chrome` directory:
 
@@ -144,25 +175,6 @@ This command:
 - Sets the **Chrome** backend to port 8000 (`CHROME_SERVICE=8000`)
 - Sets the **Image Builder** frontend to port 8003 (`IB_FRONTEND=8003`)
 - *Optional*: Sets the **Image Builder** backend to port 8086 (`IB_SERVICE=8086`), if not set, requests proxied to stage. 
-
-The development environment should now be active.
-
----
-
-## Accessing the Application
-
-After all services are running, open your browser and navigate to:
-
-    https://console.stg.foo.fedorainfracloud.org:1337
-
----
-
-## Credentials
-
-Create an account in fedora staging https://accounts.stg.fedoraproject.org
-Log in with your credentials
-
----
 
 ## Notes
 
