@@ -52,7 +52,7 @@ function cookieTransform(proxyReq, req, _res, { user, internal, identity: custom
     };
 
     const identityB64 = Buffer.from(JSON.stringify(identity), 'utf8').toString('base64');
-    proxyReq.setHeader('x-rh-identity', identityB64);
+    proxyReq.setHeader('X-Fedora-Identity', identityB64);
   }
 }
 
