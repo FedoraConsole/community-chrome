@@ -56,6 +56,9 @@ const FeatureFlagsProvider: React.FC<React.PropsWithChildren> = ({ children }) =
   const { user } = useContext(ChromeAuthContext) as DeepRequired<ChromeAuthContextValue>;
   const isPreview = useAtomValue(isPreviewAtom);
   useMemo(() => {
+    if (process.env.LOCAL) {
+      return undefined; // Triggers built-in dummy behavior
+    }
     const client = new UnleashClient({
       ...config,
       context: {

@@ -12,7 +12,7 @@ localStorage.setItem(UNLEASH_ERROR_KEY, 'false');
 export const getFeatureFlagsError = () => localStorage.getItem(UNLEASH_ERROR_KEY) === 'true';
 
 export function getUnleashClient() {
-  if (!unleashClient) {
+  if (!unleashClient && !process.env.LOCAL) {
     throw new Error('UnleashClient not initialized!');
   }
   return unleashClient;
