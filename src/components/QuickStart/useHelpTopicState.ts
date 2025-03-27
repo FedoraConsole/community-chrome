@@ -96,7 +96,9 @@ const useHelpTopicState = (initialState: Partial<HelpTopicsState> = { activeTopi
     params = appendQueryArray(params, 'bundle', bundles);
     params = appendQueryArray(params, 'application', applications);
     params = appendQueryArray(params, 'name', names);
-
+    if (process.env.LOCAL) {
+      return [];
+    }
     try {
       const { data } = await instance.get<{ content: HelpTopic }[]>(`/api/quickstarts/v1/helptopics?${params.toString()}`);
       const content = data.map(({ content }) => content);

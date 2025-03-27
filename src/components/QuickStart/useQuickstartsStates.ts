@@ -40,7 +40,7 @@ const useQuickstartsStates = (accountId?: string) => {
   );
 
   useEffect(() => {
-    if (accountId) {
+    if (accountId && !process.env.LOCAL) {
       axios
         .get<{ data: { quickstartName: string; progress: QuickStartState }[] }>('/api/quickstarts/v1/progress', {
           params: {
@@ -65,6 +65,9 @@ const useQuickstartsStates = (accountId?: string) => {
 
   const activateQuickstart = useCallback(
     async (name: string) => {
+      if (process.env.LOCAL) {
+        return;
+      }
       try {
         const {
           data: { data },

@@ -38,7 +38,7 @@ function mapOIDCUserToChromeUser(user: User | Record<string, any>, entitlements:
       account_number: '' as any,
       internal: {
         org_id: '' as any,
-        account_id: '' as any,
+        account_id: user.profile?.preferred_username as any,
       },
       user: {
         email: user.profile?.email as any,

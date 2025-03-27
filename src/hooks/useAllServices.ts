@@ -10,6 +10,7 @@ import {
 } from '../components/AllServices/allServicesLinks';
 import { getChromeStaticPathname } from '../utils/common';
 import { evaluateVisibility } from '../utils/isNavItemVisible';
+import services from '../chrome/services-generated.json';
 
 export type AvailableLinks = {
   [key: string]: NavItem;
@@ -122,6 +123,9 @@ const useAllServices = () => {
   const isMounted = useRef(false);
   const [filterValue, setFilterValue] = useState('');
   const fetchSections = useCallback(async () => {
+    if (process.env.LOCAL) {
+      return evaluateLinksVisibility(services as AllServicesSection[]);
+    }
     const query = `${getChromeStaticPathname('services')}/services-generated.json`;
     let request = allServicesFetchCache[query];
     if (!request) {

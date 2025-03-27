@@ -7,6 +7,7 @@ import { findNavLeafPath } from '../utils/common';
 import useFavoritePagesWrapper from './useFavoritePagesWrapper';
 import { isAllServicesLink } from '../components/AllServices/allServicesLinks';
 import useAllLinks from './useAllLinks';
+import { bundleMapper } from '../components/AppFilter/useAppFilter';
 
 const useFavoritedServices = () => {
   const { favoritePages } = useFavoritePagesWrapper();
@@ -30,6 +31,15 @@ const useFavoritedServices = () => {
   }, [availableSections]);
 
   useEffect(() => {
+    if (process.env.LOCAL) {
+      setBundles(
+        Object.values(bundleMapper).map((bundle) => ({
+          ...bundle,
+          sortedLinks: [],
+        })) as Navigation[]
+      );
+      return;
+    }
     fetchNavigationFiles()
       .then((data) => setBundles(data as Navigation[]))
       .catch((error) => {

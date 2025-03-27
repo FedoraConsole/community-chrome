@@ -10,19 +10,31 @@ export type ChromeUserConfig = {
 };
 
 export const initChromeUserConfig = async ({ getUser, token }: { getUser: () => Promise<ChromeUser>; token: string }) => {
-  const { data } = await axios.get<ChromeUserConfig>('/api/chrome-service/v1/user', {
-    params: {
-      'skip-identity-cache': 'true',
-    },
-  });
-  const config = data;
+  let config;
+  if (!process.env.LOCAL) {
+    const { data } = await axios.get<ChromeUserConfig>('/api/chrome-service/v1/user', {
+      params: {
+        'skip-identity-cache': 'true',
+      },
+    });
+    config = data;
+  }
 
   initializeVisibilityFunctions({
     getUser,
     getToken: () => Promise.resolve(token),
     getUserPermissions: () => Promise.resolve([]),
-    isPreview: config.data.uiPreview,
+    isPreview: config?.data.uiPreview || true,
   });
 
-  return config;
+  if (config) {
+    return config;
+  } else {
+    return {
+      data: {
+        uiPreview: true,
+        uiPreviewSeen: false,
+      },
+    };
+  }
 };

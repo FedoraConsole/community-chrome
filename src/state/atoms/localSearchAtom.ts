@@ -4,6 +4,7 @@ import { Orama, create, insert } from '@orama/orama';
 import { getChromeStaticPathname } from '../../utils/common';
 import axios from 'axios';
 import { NavItemPermission } from '../../@types/types';
+import searchData from '../../chrome/search-index.json';
 
 type IndexEntry = {
   icon?: string;
@@ -34,7 +35,11 @@ export const SearchPermissionsCache = new Map<string, boolean>();
 
 const asyncSearchIndexAtom = atom(async () => {
   const staticPath = getChromeStaticPathname('search');
-  const { data: rawIndex } = await axios.get<IndexEntry[]>(`${staticPath}/search-index.json`);
+  let rawIndex: IndexEntry[] = searchData as IndexEntry[];
+  if (!process.env.LOCAL) {
+    const { data } = await axios.get<IndexEntry[]>(`${staticPath}/search-index.json`);
+    rawIndex = data;
+  }
   const searchIndex: SearchEntry[] = [];
   const idSet = new Set<string>();
   rawIndex.forEach((entry) => {

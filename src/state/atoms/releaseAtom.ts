@@ -16,7 +16,9 @@ export const isPreviewAtom = atomWithToggle(undefined, async (isPreview) => {
     // Required to change the `isBeta` function return value in the visibility functions
     if (visibilityFunctionsExist()) {
       updateVisibilityFunctionsBeta(isPreview);
-      await axios.post('/api/chrome-service/v1/user/update-ui-preview', { uiPreview: isPreview });
+      if (!process.env.LOCAL) {
+        await axios.post('/api/chrome-service/v1/user/update-ui-preview', { uiPreview: isPreview });
+      }
     }
     if (unleashClientExists()) {
       // Required to change the `platform.chrome.ui.preview` context in the feature flags, TS is bugged

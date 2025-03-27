@@ -3,6 +3,7 @@ import { BundleNav, BundleNavigation, NavItem } from '../@types/types';
 import fetchNavigationFiles from '../utils/fetchNavigationFiles';
 import { evaluateVisibility } from '../utils/isNavItemVisible';
 import { isExpandableNav } from '../utils/common';
+import { bundleMapper } from '../components/AppFilter/useAppFilter';
 
 const getFirstChildRoute = (routes: NavItem[] = []): NavItem | undefined => {
   const firstLeaf = routes.find((item) => !item.expandable && item.href);
@@ -82,15 +83,27 @@ const getNavLinks = (navItems: NavItem[]): NavItem[] => {
 };
 
 const fetchNavigation = async () => {
-  const bundlesNavigation = await fetchNavigationFiles().then((data) => data.map(handleBundleResponse));
-  const parsedBundles = await Promise.all(
-    bundlesNavigation.map(async (bundleNav) => ({
-      ...bundleNav,
-      links: (await Promise.all(bundleNav.links.map(evaluateVisibility))).filter(({ isHidden }) => !isHidden),
-    }))
-  );
-  const allLinks = parsedBundles.map(({ links }) => getNavLinks(links)).flat();
-  return allLinks;
+  if (process.env.LOCAL) {
+    const bundlesNavigation = Object.values(bundleMapper).map((data) => handleBundleResponse(data as BundleNavigation));
+    const parsedBundles = await Promise.all(
+      bundlesNavigation.map(async (bundleNav) => ({
+        ...bundleNav,
+        links: (await Promise.all(bundleNav.links.map(evaluateVisibility))).filter(({ isHidden }) => !isHidden),
+      }))
+    );
+    const allLinks = parsedBundles.map(({ links }) => getNavLinks(links)).flat();
+    return allLinks;
+  } else {
+    const bundlesNavigation = await fetchNavigationFiles().then((data) => data.map(handleBundleResponse));
+    const parsedBundles = await Promise.all(
+      bundlesNavigation.map(async (bundleNav) => ({
+        ...bundleNav,
+        links: (await Promise.all(bundleNav.links.map(evaluateVisibility))).filter(({ isHidden }) => !isHidden),
+      }))
+    );
+    const allLinks = parsedBundles.map(({ links }) => getNavLinks(links)).flat();
+    return allLinks;
+  }
 };
 
 const useAllLinks = () => {

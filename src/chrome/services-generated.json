@@ -1,0 +1,60 @@
+[
+  {
+    "description": "Create Fedora/CentOS images.",
+    "icon": "RocketIcon",
+    "id": "deploy",
+    "links": [
+      {
+        "isGroup": true,
+        "links": [
+          {
+            "alt_title": [
+              "Images",
+              "image",
+              "image builder",
+              "my images",
+              "gold image",
+              "template image",
+              "vm template",
+              "image template",
+              "blueprint",
+              "image",
+              "builder",
+              "images",
+              "build",
+              "image-builder",
+              "insights",
+              "Build image",
+              "image builder",
+              "gold image",
+              "blueprint",
+              "template image",
+              "vm template",
+              "image template",
+              "vmware template",
+              "packer build",
+              "packer template",
+              "RHEL AMI",
+              "RHEL machine image",
+              "azure",
+              "aws",
+              "build",
+              "assemble",
+              "image-builder"
+            ],
+            "appId": "imageBuilder",
+            "description": "Build and manage Fedora Linux images and environments.",
+            "href": "/insights/image-builder",
+            "icon": "InsightsIcon",
+            "id": "imageBuilder",
+            "product": "Fedora",
+            "subtitle": "Fedora Services",
+            "title": "Images"
+          }
+        ],
+        "title": "Fedora Linux"
+      }
+    ],
+    "title": "Deploy"
+  }
+]

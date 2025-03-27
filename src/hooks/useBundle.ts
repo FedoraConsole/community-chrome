@@ -14,10 +14,8 @@ export const bundleMapping: {
   [bundleId: string]: string;
 } = {
   insights: 'Fedora',
-  edge: 'Edge management',
   landing: 'Home',
   allservices: 'Home',
-  quay: 'Quay.io',
 };
 
 const useBundle = () => {

@@ -1,0 +1,68 @@
+{
+    "id": "rhel",
+    "title": "Fedora",
+    "navItems": [
+      {
+        "id": "overview",
+        "appId": "dashboard",
+        "title": "Dashboard",
+        "filterable": false,
+        "href": "/insights/dashboard",
+        "product": "Fedora"
+      },
+      {
+        "title": "Inventory",
+        "expandable": true,
+        "id": "inventory",
+        "description": "View details about your fedora systems.",
+        "subtitle": "Fedora Services",
+        "routes": [
+          {
+            "id": "imageBuilder",
+            "appId": "imageBuilder",
+            "title": "Images",
+            "href": "/insights/image-builder",
+            "icon": "InsightsIcon",
+                     "product": "Fedora",
+            "subtitle": "Fedora Services",
+            "description": "Build and manage Fedora Linux images and environments.",
+            "alt_title": [
+              "Images",
+              "image",
+              "image builder",
+              "my images",
+              "gold image",
+              "template image",
+              "vm template",
+              "image template",
+              "blueprint",
+              "image",
+              "builder",
+              "images",
+              "build",
+              "image-builder",
+              "insights",
+              "Build image",
+              "image builder",
+              "gold image",
+              "blueprint",
+              "template image",
+              "vm template",
+              "image template",
+              "vmware template",
+              "packer build",
+              "packer template",
+              "RHEL AMI",
+              "RHEL machine image",
+              "azure",
+              "aws",
+              "build",
+              "assemble",
+              "image-builder"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  

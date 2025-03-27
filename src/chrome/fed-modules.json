@@ -1,0 +1,23 @@
+{
+    "imageBuilder": {
+        "manifestLocation": "/apps/image-builder/fed-mods.json",
+        "config": {
+          "supportCaseData": {
+              "product": "Image Builder",
+              "version": "Image Builder"
+          }
+        },
+        "modules": [
+            {
+                "id": "image-builder",
+                "module": "./RootApp",
+                "routes": [
+                    {
+                        "pathname": "/insights/image-builder"
+                    }
+                ]
+            }
+        ]
+    }
+  }
+  
